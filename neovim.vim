@@ -18,11 +18,6 @@ augroup numbertoggle
   autocmd BufLeave,FocusLost,InsertEnter   * set norelativenumber
 augroup END
 
-" Theme
-filetype plugin indent on
-syntax enable
-colorscheme gruvbox	
-set background=dark
 
 " Require for powerline
 set noshowmode
@@ -82,6 +77,14 @@ Plug 'roxma/vim-hug-neovim-rpc'
 Plug 'Shougo/neosnippet.vim'
 Plug 'Shougo/neosnippet-snippets'
 call plug#end()
+
+
+" Theme
+filetype plugin indent on
+syntax enable
+colorscheme gruvbox	
+set background=dark
+
 
 
 " Advance Configs
