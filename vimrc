@@ -1,3 +1,4 @@
+" Basic vimrc
 set nocompatible              " be iMproved, required
 set number
 set linebreak
