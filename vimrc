@@ -5,7 +5,6 @@ set linebreak
 set showbreak=+++
 set textwidth=100
 set showmatch
-set visualbell
 set hlsearch
 set smartcase
 set ignorecase
