@@ -1,13 +1,25 @@
 " Set to vim mode
 if &compatible
  set nocompatible
-endif
+endif 
+
+
+
+" Neovim python env
+let g:python3_host_prog = '/home/thepro/anaconda3/bin/python'
+
+set backup
+" set where to write backups to
+set backupdir=~/.vimbackup
+" and the backup extension
+au BufWritePre * let &bex = substitute(expand('%:p:h'), '/', ':', 'g') . strftime(';%FT%T')
 
 
 "Basic configs
 set tabstop=4
 set shiftwidth=4
 set expandtab
+set smartcase
 
 set number relativenumber
 set clipboard+=unnamed
@@ -18,6 +30,13 @@ augroup numbertoggle
   autocmd BufEnter,FocusGained,InsertLeave * set relativenumber
   autocmd BufLeave,FocusLost,InsertEnter   * set norelativenumber
 augroup END
+
+" Terminal mode
+tnoremap <Esc> <C-\><C-n>:q!<CR>
+
+" Leader
+let mapleader=" "
+
 
 " nvim diff 
 " Don't fold 
@@ -55,7 +74,7 @@ inoremap <c-c> <Esc>
 
 " netrw preview file triggered by p 
 let g:netrw_preview = 1
-
+"let g:netrw_winsize = 50 
 
 "Advanced plugins
 
@@ -68,7 +87,9 @@ Plug 'autozimu/LanguageClient-neovim', {
     \ }
 Plug 'morhetz/gruvbox'
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
-Plug 'itchyny/lightline.vim'
+"Plug 'itchyny/lightline.vim'
+Plug 'vim-airline/vim-airline'
+Plug 'vim-airline/vim-airline-themes'
 Plug 'junegunn/fzf.vim'
 Plug 'Shougo/echodoc.vim'
 Plug 'lervag/vimtex'
@@ -77,6 +98,8 @@ Plug 'majutsushi/tagbar'
 Plug 'Shougo/neosnippet.vim'
 Plug 'Shougo/neosnippet-snippets'
 Plug 'honza/vim-snippets'
+Plug 'elzr/vim-json'
+Plug 'tpope/vim-fugitive'
 call plug#end()
 
 " Theme
@@ -87,7 +110,6 @@ set background=dark
 
 " Deoplete enable on startup 
 let g:deoplete#enable_at_startup = 1
-inoremap <silent><expr><CR> pumvisible() ? deoplete#mappings#close_popup() : "\<CR>"
 
 " Rust for deoplete
 let g:deoplete#sources#rust#racer_binary='/home/thepro/.cargo/bin/racer'
@@ -95,9 +117,11 @@ let g:deoplete#sources#rust#rust_source_path='/home/thepro/.rustup/toolchains/ni
 let g:deoplete#sources#rust#show_duplicates=1
 let g:autofmt_autosave = 1
 
+
 " Language Client
 " Automatically start language servers.
 let g:LanguageClient_autoStart = 1
+let g:LanguageClient_diagnosticsMaxSeverity = "Error"
 let g:LanguageClient_serverCommands = {
     \ 'python': ['~/anaconda3/bin/pyls'],
     \ 'go': ['bingo','-disable-func-snippet'],
@@ -105,26 +129,35 @@ let g:LanguageClient_serverCommands = {
 let g:LanguageClient_rootMarkers = {
         \ 'go': ['.git', 'go.mod'],
         \ }
-let g:LanguageClient_useVirtualText = 1
 
+
+let g:LanguageClient_useFloatingHover = 1
+let g:LanguageClient_useVirtualText = 0
+
+set hidden
 nnoremap <F5> :call LanguageClient_contextMenu()<CR>
 nnoremap <silent> K :call LanguageClient#textDocument_hover()<CR>
 nnoremap <silent> gd :call LanguageClient#textDocument_definition()<CR>
 nnoremap <silent> <F2> :call LanguageClient#textDocument_rename()<CR>
 
 
-" NeoSnippet
+
+" Plugin key-mappings.
 " Note: It must be "imap" and "smap".  It uses <Plug> mappings.
 imap <C-k>     <Plug>(neosnippet_expand_or_jump)
 smap <C-k>     <Plug>(neosnippet_expand_or_jump)
 xmap <C-k>     <Plug>(neosnippet_expand_target)
+" For conceal markers.
 let g:neosnippet#enable_completed_snippet = 1
-set conceallevel=2 concealcursor=niv
-
-
-" EchoDoc
-set noshowmode
-let g:echodoc#enable_at_sartup = 1
+set conceallevel=1 concealcursor=niv
+" SuperTab like snippets behavior.
+" Note: It must be "imap" and "smap".  It uses <Plug> mappings.
+imap <expr><TAB>
+ \ pumvisible() ? "\<C-n>" :
+ \ neosnippet#expandable_or_jumpable() ?
+ \    "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"
+smap <expr><TAB> neosnippet#expandable_or_jumpable() ?
+\ "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"
 
 
 "
@@ -134,3 +167,10 @@ let g:tex_conceal = ""
 
 " TagBar
 nmap <F8> :TagbarToggle<CR>
+
+" Vim-json
+let g:vim_json_syntax_conceal = 0
+
+" Vim-yaml
+autocmd FileType yaml setlocal ts=2 sts=2 sw=2 expandtab
+
