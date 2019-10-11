@@ -1,14 +1,22 @@
 " Basic vimrc
 set nocompatible              " be iMproved, required
-set number
-set linebreak
-set showbreak=+++
-set textwidth=100
+" Remapped Esc to <c-c>
+inoremap <c-c> <Esc>
+" Leader 
+let mapleader = "\<Space>"
+" relative linenumbers
+set number relativenumber
+augroup numbertoggle
+  autocmd!
+  autocmd BufEnter,FocusGained,InsertLeave * set relativenumber
+  autocmd BufLeave,FocusLost,InsertEnter   * set norelativenumber
+augroup END
+" Hide highlights
+nnoremap <silent> <leader>n :nohlsearch<Bar>:echo<CR>
 set showmatch
+set incsearch
 set hlsearch
 set smartcase
-set ignorecase
-set incsearch
 set autoindent
 set shiftwidth=4
 set smartindent
@@ -17,11 +25,4 @@ set softtabstop=4
 set ruler
 set undolevels=1000
 set backspace=indent,eol,start
-set number relativenumber
-augroup numbertoggle
-  autocmd!
-  autocmd BufEnter,FocusGained,InsertLeave * set relativenumber
-  autocmd BufLeave,FocusLost,InsertEnter   * set norelativenumber
-augroup END
-nnoremap <silent> <Space> :nohlsearch<Bar>:echo<CR>
 set clipboard+=unnamed

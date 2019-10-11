@@ -4,27 +4,36 @@ if &compatible
 endif 
 
 
+" Remapped Esc to <c-c>
+inoremap <c-c> <Esc>
 
 " Neovim python env
 let g:python3_host_prog = '/home/thepro/anaconda3/bin/python'
 
+" Backups
 set backup
-" set where to write backups to
 set backupdir=~/.vimbackup
-" and the backup extension
 au BufWritePre * let &bex = substitute(expand('%:p:h'), '/', ':', 'g') . strftime(';%FT%T')
 
+" Leader
+let mapleader = "\<Space>"
 
-"Basic configs
+" Basic indentation configs
 set tabstop=4
 set shiftwidth=4
 set expandtab
+set backspace=indent,eol,start
 set smartcase
+set incsearch
 
-set number relativenumber
+" Global Clipboard
 set clipboard+=unnamed
 
+" Don't show mode in echo bar (for echodoc)
+set noshowmode
+
 " Relative Line numbers
+set number relativenumber
 augroup numbertoggle
   autocmd!
   autocmd BufEnter,FocusGained,InsertLeave * set relativenumber
@@ -34,8 +43,7 @@ augroup END
 " Terminal mode
 tnoremap <Esc> <C-\><C-n>:q!<CR>
 
-" Leader
-let mapleader=" "
+set completeopt-=preview
 
 
 " nvim diff 
@@ -48,36 +56,15 @@ nnoremap <silent> <Leader>dp V:diffput<cr>
 nnoremap <silent> <Leader>dg V:diffget<cr>
 
 " Space to clear highlight
-nnoremap <silent> <Space> :nohlsearch<Bar>:echo<CR>
+nnoremap <silent> <leader>n :nohlsearch<Bar>:echo<CR>
 
 " Keep dummy line to prevent LCN from messing view
-sign define Dummy
-autocmd VimEnter,SessionLoadPost,BufRead * execute 'sign place 97349278 line=9999 name=Dummy buffer='.bufnr('%')
-
-"" Set split to right for preview
-"augroup previewWindowPosition
-"   au!
-"   autocmd BufWinEnter * call PreviewWindowPosition()
-"augroup END
-"function! PreviewWindowPosition()
-"   if &previewwindow
-"      wincmd L
-"   endif
-"endfunction    
-
-" Disable preview by default
-set completeopt-=preview
-
-
-" Remapped Esc to <c-c>
-inoremap <c-c> <Esc>
+set signcolumn=yes
 
 " netrw preview file triggered by p 
 let g:netrw_preview = 1
-"let g:netrw_winsize = 50 
 
 "Advanced plugins
-
 " Vim Plug Plugins
 call plug#begin('~/.vim/plugged')
 Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
@@ -87,7 +74,6 @@ Plug 'autozimu/LanguageClient-neovim', {
     \ }
 Plug 'morhetz/gruvbox'
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
-"Plug 'itchyny/lightline.vim'
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 Plug 'junegunn/fzf.vim'
@@ -107,6 +93,7 @@ filetype plugin indent on
 syntax enable
 colorscheme gruvbox	
 set background=dark
+let g:airline#parts#ffenc#skip_expected_string='utf-8[unix]'
 
 " Deoplete enable on startup 
 let g:deoplete#enable_at_startup = 1
@@ -136,10 +123,23 @@ let g:LanguageClient_useVirtualText = 0
 
 set hidden
 nnoremap <F5> :call LanguageClient_contextMenu()<CR>
+nnoremap <F6> :copen<CR>
 nnoremap <silent> K :call LanguageClient#textDocument_hover()<CR>
 nnoremap <silent> gd :call LanguageClient#textDocument_definition()<CR>
 nnoremap <silent> <F2> :call LanguageClient#textDocument_rename()<CR>
 
+
+nnoremap <leader>g :call LCToggle()<cr>
+let g:lc_toggle = 0
+function! LCToggle()
+    if g:lc_toggle
+        call LanguageClient#exit()
+        let g:lc_toggle = 0
+    else
+        call LanguageClient#startServer()
+        let g:lc_toggle = 1
+    endif
+endfunction
 
 
 " Plugin key-mappings.
@@ -160,7 +160,6 @@ smap <expr><TAB> neosnippet#expandable_or_jumpable() ?
 \ "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"
 
 
-"
 " VIM Latex 
 let g:tex_conceal = ""
 
@@ -174,3 +173,12 @@ let g:vim_json_syntax_conceal = 0
 " Vim-yaml
 autocmd FileType yaml setlocal ts=2 sts=2 sw=2 expandtab
 
+" Echodoc
+let g:echodoc#enable_at_startup = 1
+let g:echodoc#type = 'floating'
+
+" FZF
+" Commands
+nnoremap <leader>c :Commands<CR>
+" Commands History
+nnoremap <leader>h :History:<CR>
