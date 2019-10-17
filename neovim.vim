@@ -56,13 +56,14 @@ nnoremap <silent> <Leader>dp V:diffput<cr>
 nnoremap <silent> <Leader>dg V:diffget<cr>
 
 " Space to clear highlight
-nnoremap <silent> <leader>n :nohlsearch<Bar>:echo<CR>
+nnoremap <c-h> :nohlsearch<Bar>:echo<CR>
 
 " Keep dummy line to prevent LCN from messing view
 set signcolumn=yes
 
 " netrw preview file triggered by p 
 let g:netrw_preview = 1
+
 
 "Advanced plugins
 " Vim Plug Plugins
@@ -74,8 +75,7 @@ Plug 'autozimu/LanguageClient-neovim', {
     \ }
 Plug 'morhetz/gruvbox'
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
-Plug 'vim-airline/vim-airline'
-Plug 'vim-airline/vim-airline-themes'
+Plug 'itchyny/lightline.vim'
 Plug 'junegunn/fzf.vim'
 Plug 'Shougo/echodoc.vim'
 Plug 'lervag/vimtex'
@@ -93,7 +93,19 @@ filetype plugin indent on
 syntax enable
 colorscheme gruvbox	
 set background=dark
-let g:airline#parts#ffenc#skip_expected_string='utf-8[unix]'
+let g:lightline = {
+			\ 'active': {
+			\   'left': [ [ 'mode', 'paste' ],
+			\             [ 'gitbranch', 'readonly', 'filename', 'modified' ] ],
+            \   'right': [ [ 'lineinfo' ],
+            \              [ 'percent' ],
+            \              [ 'filetype' ] ]
+			\ },
+			\ 'component_function': {
+			\   'gitbranch': 'fugitive#head'
+			\ },
+			\ }
+
 
 " Deoplete enable on startup 
 let g:deoplete#enable_at_startup = 1
@@ -123,14 +135,13 @@ let g:LanguageClient_useVirtualText = 0
 
 set hidden
 nnoremap <F5> :call LanguageClient_contextMenu()<CR>
-nnoremap <F6> :copen<CR>
 nnoremap <silent> K :call LanguageClient#textDocument_hover()<CR>
 nnoremap <silent> gd :call LanguageClient#textDocument_definition()<CR>
 nnoremap <silent> <F2> :call LanguageClient#textDocument_rename()<CR>
 
 
 nnoremap <leader>g :call LCToggle()<cr>
-let g:lc_toggle = 0
+let g:lc_toggle = 1
 function! LCToggle()
     if g:lc_toggle
         call LanguageClient#exit()
@@ -141,23 +152,26 @@ function! LCToggle()
     endif
 endfunction
 
+nnoremap <leader>q :call QFToggle()<cr>
+let g:qf_toggle = 1
+function! QFToggle()
+    if g:qf_toggle
+            :copen
+        let g:qf_toggle = 0
+    else
+            :cclose
+        let g:qf_toggle = 1
+    endif
+endfunction
+
 
 " Plugin key-mappings.
-" Note: It must be "imap" and "smap".  It uses <Plug> mappings.
 imap <C-k>     <Plug>(neosnippet_expand_or_jump)
 smap <C-k>     <Plug>(neosnippet_expand_or_jump)
 xmap <C-k>     <Plug>(neosnippet_expand_target)
 " For conceal markers.
 let g:neosnippet#enable_completed_snippet = 1
-set conceallevel=1 concealcursor=niv
-" SuperTab like snippets behavior.
-" Note: It must be "imap" and "smap".  It uses <Plug> mappings.
-imap <expr><TAB>
- \ pumvisible() ? "\<C-n>" :
- \ neosnippet#expandable_or_jumpable() ?
- \    "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"
-smap <expr><TAB> neosnippet#expandable_or_jumpable() ?
-\ "\<Plug>(neosnippet_expand_or_jump)" : "\<TAB>"
+set conceallevel=2 concealcursor=niv
 
 
 " VIM Latex 
@@ -178,7 +192,9 @@ let g:echodoc#enable_at_startup = 1
 let g:echodoc#type = 'floating'
 
 " FZF
-" Commands
-nnoremap <leader>c :Commands<CR>
-" Commands History
-nnoremap <leader>h :History:<CR>
+" Commands history
+nnoremap <leader>c :Commands <CR>
+" Commands history
+nnoremap <leader>h :History: <CR>
+" Search history
+nnoremap <leader>s :History/ <CR>
