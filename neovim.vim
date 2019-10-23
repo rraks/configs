@@ -14,6 +14,8 @@ let g:python3_host_prog = '/home/thepro/anaconda3/bin/python'
 set backup
 set backupdir=~/.vimbackup
 au BufWritePre * let &bex = substitute(expand('%:p:h'), '/', ':', 'g') . strftime(';%FT%T')
+" Put below in crontab
+" * * * * * find /home/thepro/.vimbackup/* -type f -name '*;*' -mtime +1 -delete
 
 " Leader
 let mapleader = "\<Space>"
@@ -47,10 +49,6 @@ set completeopt-=preview
 
 
 " nvim diff 
-" Don't fold 
-if &diff                             " only for diff mode/vimdiff
-  set diffopt=filler,context:1000000 " filler is default and inserts empty lines for sync
-endif
 " Map dp and do for lines instead of blocks
 nnoremap <silent> <Leader>dp V:diffput<cr>
 nnoremap <silent> <Leader>dg V:diffget<cr>
@@ -86,6 +84,8 @@ Plug 'Shougo/neosnippet-snippets'
 Plug 'honza/vim-snippets'
 Plug 'elzr/vim-json'
 Plug 'tpope/vim-fugitive'
+Plug 'junegunn/goyo.vim'
+Plug 'easymotion/vim-easymotion'
 call plug#end()
 
 " Theme
@@ -189,7 +189,7 @@ autocmd FileType yaml setlocal ts=2 sts=2 sw=2 expandtab
 
 " Echodoc
 let g:echodoc#enable_at_startup = 1
-let g:echodoc#type = 'floating'
+let g:echodoc#type = 'echo'
 
 " FZF
 " Commands history
@@ -198,3 +198,22 @@ nnoremap <leader>c :Commands <CR>
 nnoremap <leader>h :History: <CR>
 " Search history
 nnoremap <leader>s :History/ <CR>
+
+" Easy motion
+let g:EasyMotion_do_mapping = 0 " Disable default mappings
+
+" Jump to anywhere you want with minimal keystrokes, with just one key binding.
+" `s{char}{label}`
+nmap s <Plug>(easymotion-overwin-f)
+" or
+" `s{char}{char}{label}`
+" Need one more keystroke, but on average, it may be more comfortable.
+nmap s <Plug>(easymotion-overwin-f2)
+
+" Turn on case-insensitive feature
+let g:EasyMotion_smartcase = 1
+
+" JK motions: Line motions
+map <Leader>j <Plug>(easymotion-j)
+map <Leader>k <Plug>(easymotion-k)
+map <Leader><Leader>w <Plug>(easymotion-w)
