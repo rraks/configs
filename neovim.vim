@@ -1,8 +1,10 @@
-" Set to vim mode
-if &compatible
- set nocompatible
-endif 
+""""""""""""""""""""""""""""""""""""
+" rraks' NeoVim setup
+""""""""""""""""""""""""""""""""""""
 
+""""""""""""""""""
+" Basic settings
+""""""""""""""""""
 
 " Remapped Esc to <c-c>
 inoremap <c-c> <Esc>
@@ -34,19 +36,11 @@ set clipboard+=unnamed
 " Don't show mode in echo bar (for echodoc)
 set noshowmode
 
-" Relative Line numbers
-set number relativenumber
-augroup numbertoggle
-  autocmd!
-  autocmd BufEnter,FocusGained,InsertLeave * set relativenumber
-  autocmd BufLeave,FocusLost,InsertEnter   * set norelativenumber
-augroup END
-
 " Terminal mode
 tnoremap <Esc> <C-\><C-n>:q!<CR>
 
+" Don't display preview by default
 set completeopt-=preview
-
 
 " nvim diff 
 " Map dp and do for lines instead of blocks
@@ -56,15 +50,14 @@ nnoremap <silent> <Leader>dg V:diffget<cr>
 " Space to clear highlight
 nnoremap <c-h> :nohlsearch<Bar>:echo<CR>
 
-" Keep dummy line to prevent LCN from messing view
-set signcolumn=yes
-
 " netrw preview file triggered by p 
 let g:netrw_preview = 1
 
 
-"Advanced plugins
-" Vim Plug Plugins
+""""""""""""""""""
+" Vim Plug
+""""""""""""""""""
+
 call plug#begin('~/.vim/plugged')
 Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
 Plug 'autozimu/LanguageClient-neovim', {
@@ -88,11 +81,26 @@ Plug 'junegunn/goyo.vim'
 Plug 'easymotion/vim-easymotion'
 call plug#end()
 
+
+""""""""""""""""""
+" Appearances
+""""""""""""""""""
+" Keep dummy line to prevent LCN from messing view
+set signcolumn=yes
+" Relative Line numbers
+set number relativenumber
+augroup numbertoggle
+  autocmd!
+  autocmd BufEnter,FocusGained,InsertLeave * set relativenumber
+  autocmd BufLeave,FocusLost,InsertEnter   * set norelativenumber
+augroup END
+
 " Theme
 filetype plugin indent on
 syntax enable
 colorscheme gruvbox	
 set background=dark
+" Lightline
 let g:lightline = {
 			\ 'active': {
 			\   'left': [ [ 'mode', 'paste' ],
@@ -107,6 +115,10 @@ let g:lightline = {
 			\ }
 
 
+""""""""""""""""""
+" Deoplete 
+""""""""""""""""""
+
 " Deoplete enable on startup 
 let g:deoplete#enable_at_startup = 1
 
@@ -117,8 +129,10 @@ let g:deoplete#sources#rust#show_duplicates=1
 let g:autofmt_autosave = 1
 
 
+""""""""""""""""""
 " Language Client
-" Automatically start language servers.
+""""""""""""""""""
+
 let g:LanguageClient_autoStart = 1
 let g:LanguageClient_diagnosticsMaxSeverity = "Error"
 let g:LanguageClient_serverCommands = {
@@ -129,10 +143,11 @@ let g:LanguageClient_rootMarkers = {
         \ 'go': ['.git', 'go.mod'],
         \ }
 
-
+" Language client appearances 
 let g:LanguageClient_useFloatingHover = 1
 let g:LanguageClient_useVirtualText = 0
 
+" Maps for Language client 
 set hidden
 nnoremap <F5> :call LanguageClient_contextMenu()<CR>
 nnoremap <silent> K :call LanguageClient#textDocument_hover()<CR>
@@ -140,6 +155,7 @@ nnoremap <silent> gd :call LanguageClient#textDocument_definition()<CR>
 nnoremap <silent> <F2> :call LanguageClient#textDocument_rename()<CR>
 
 
+" Toggle Language Client
 nnoremap <leader>g :call LCToggle()<cr>
 let g:lc_toggle = 1
 function! LCToggle()
@@ -152,6 +168,7 @@ function! LCToggle()
     endif
 endfunction
 
+" Toggle Quickfix
 nnoremap <leader>q :call QFToggle()<cr>
 let g:qf_toggle = 1
 function! QFToggle()
@@ -165,6 +182,9 @@ function! QFToggle()
 endfunction
 
 
+""""""""""""""""""
+" Neo-snippet
+""""""""""""""""""
 " Plugin key-mappings.
 imap <C-k>     <Plug>(neosnippet_expand_or_jump)
 smap <C-k>     <Plug>(neosnippet_expand_or_jump)
@@ -174,46 +194,67 @@ let g:neosnippet#enable_completed_snippet = 1
 set conceallevel=2 concealcursor=niv
 
 
+""""""""""""""""""
 " VIM Latex 
+""""""""""""""""""
 let g:tex_conceal = ""
 
 
+""""""""""""""""""
 " TagBar
+""""""""""""""""""
 nmap <F8> :TagbarToggle<CR>
 
+
+""""""""""""""""""
 " Vim-json
+""""""""""""""""""
 let g:vim_json_syntax_conceal = 0
 
+
+""""""""""""""""""
 " Vim-yaml
+""""""""""""""""""
 autocmd FileType yaml setlocal ts=2 sts=2 sw=2 expandtab
 
+
+""""""""""""""""""
 " Echodoc
+""""""""""""""""""
 let g:echodoc#enable_at_startup = 1
 let g:echodoc#type = 'echo'
 
+
+""""""""""""""""""
 " FZF
+""""""""""""""""""
 " Commands history
 nnoremap <leader>c :Commands <CR>
 " Commands history
 nnoremap <leader>h :History: <CR>
 " Search history
 nnoremap <leader>s :History/ <CR>
+" Maps
+nnoremap <leader>m :Maps <CR>
 
+
+""""""""""""""""""
 " Easy motion
-let g:EasyMotion_do_mapping = 0 " Disable default mappings
-
-" Jump to anywhere you want with minimal keystrokes, with just one key binding.
-" `s{char}{label}`
+""""""""""""""""""
+" Disable default mappings
+let g:EasyMotion_do_mapping = 0 
+" s to start 2-searh
 nmap s <Plug>(easymotion-overwin-f)
-" or
-" `s{char}{char}{label}`
-" Need one more keystroke, but on average, it may be more comfortable.
 nmap s <Plug>(easymotion-overwin-f2)
-
 " Turn on case-insensitive feature
 let g:EasyMotion_smartcase = 1
-
 " JK motions: Line motions
 map <Leader>j <Plug>(easymotion-j)
 map <Leader>k <Plug>(easymotion-k)
-map <Leader><Leader>w <Plug>(easymotion-w)
+" Word search
+map <Leader>w <Plug>(easymotion-w)
+" N-search
+map  / <Plug>(easymotion-sn)
+omap / <Plug>(easymotion-tn)
+map  n <Plug>(easymotion-next)
+map  N <Plug>(easymotion-prev)
