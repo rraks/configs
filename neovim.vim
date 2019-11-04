@@ -191,13 +191,14 @@ smap <C-k>     <Plug>(neosnippet_expand_or_jump)
 xmap <C-k>     <Plug>(neosnippet_expand_target)
 " For conceal markers.
 let g:neosnippet#enable_completed_snippet = 1
-set conceallevel=2 concealcursor=niv
+" set conceallevel=2 concealcursor=niv
 
 
 """"""""""""""""""
 " VIM Latex 
 """"""""""""""""""
 let g:tex_conceal = ""
+"<{}>"
 
 
 """"""""""""""""""
@@ -234,15 +235,18 @@ nnoremap <leader>c :Commands <CR>
 nnoremap <leader>h :History: <CR>
 " Search history
 nnoremap <leader>s :History/ <CR>
-" Maps
+" Normal mode Maps
 nnoremap <leader>m :Maps <CR>
+" Lines with search
+nnoremap <leader>l :Lines <CR>
+nnoremap <leader><leader>h :Helptags <CR>
 
 
 """"""""""""""""""
 " Easy motion
 """"""""""""""""""
 " Disable default mappings
-let g:EasyMotion_do_mapping = 0 
+let g:EasyMotion_do_mapping = 1
 " s to start 2-searh
 nmap s <Plug>(easymotion-overwin-f)
 nmap s <Plug>(easymotion-overwin-f2)
@@ -251,10 +255,3 @@ let g:EasyMotion_smartcase = 1
 " JK motions: Line motions
 map <Leader>j <Plug>(easymotion-j)
 map <Leader>k <Plug>(easymotion-k)
-" Word search
-map <Leader>w <Plug>(easymotion-w)
-" N-search
-map  / <Plug>(easymotion-sn)
-omap / <Plug>(easymotion-tn)
-map  n <Plug>(easymotion-next)
-map  N <Plug>(easymotion-prev)
