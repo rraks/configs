@@ -53,6 +53,10 @@ nnoremap <c-h> :nohlsearch<Bar>:echo<CR>
 " netrw preview file triggered by p 
 let g:netrw_preview = 1
 
+" Star doesn't jump to the next match
+nnoremap * *``
+
+
 
 """"""""""""""""""
 " Vim Plug
@@ -156,7 +160,7 @@ nnoremap <silent> <F2> :call LanguageClient#textDocument_rename()<CR>
 
 
 " Toggle Language Client
-nnoremap <leader>g :call LCToggle()<cr>
+nnoremap <leader><leader>g :call LCToggle()<cr>
 let g:lc_toggle = 1
 function! LCToggle()
     if g:lc_toggle
@@ -239,7 +243,47 @@ nnoremap <leader>s :History/ <CR>
 nnoremap <leader>m :Maps <CR>
 " Lines with search
 nnoremap <leader>l :Lines <CR>
+nnoremap <leader>g :GFiles? <CR>
 nnoremap <leader><leader>h :Helptags <CR>
+" Files
+command! -bang -nargs=? -complete=dir Files
+  \ call fzf#vim#files(<q-args>, fzf#vim#with_preview(), <bang>0)
+
+
+" Rg
+command! -bang -nargs=* Rg
+  \ call fzf#vim#grep(
+  \   'rg --column --line-number --no-heading --color=always --smart-case '.shellescape(<q-args>), 1,
+  \           fzf#vim#with_preview(), <bang>0)
+" Rg
+nnoremap <leader>r :Rg <CR>
+
+" Floating window
+set winblend=0
+
+hi NormalFloat guibg=None
+if exists('g:fzf_colors.bg')
+call remove(g:fzf_colors, 'bg')
+endif
+
+if stridx($FZF_DEFAULT_OPTS, '--border') == -1
+let $FZF_DEFAULT_OPTS .= ' --border'
+endif
+
+function! FloatingFZF()
+let width = float2nr(&columns * 0.8)
+let height = float2nr(&lines * 0.6)
+let opts = { 'relative': 'editor',
+           \ 'row': (&lines - height) / 2,
+           \ 'col': (&columns - width) / 2,
+           \ 'width': width,
+           \ 'height': height }
+
+call nvim_open_win(nvim_create_buf(v:false, v:true), v:true, opts)
+endfunction
+
+let g:fzf_layout = { 'window': 'call FloatingFZF()' }
+
 
 
 """"""""""""""""""
