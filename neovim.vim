@@ -6,9 +6,6 @@
 " Basic settings
 """"""""""""""""""
 
-" Remapped Esc to <c-c>
-inoremap <c-c> <Esc>
-
 " Neovim python env
 let g:python3_host_prog = '/home/thepro/anaconda3/bin/python'
 
@@ -19,8 +16,6 @@ au BufWritePre * let &bex = substitute(expand('%:p:h'), '/', ':', 'g') . strftim
 " Put below in crontab
 " * * * * * find /home/thepro/.vimbackup/* -type f -name '*;*' -mtime +1 -delete
 
-" Leader
-let mapleader = "\<Space>"
 
 " Basic indentation configs
 set tabstop=4
@@ -36,25 +31,27 @@ set clipboard+=unnamed
 " Don't show mode in echo bar (for echodoc)
 set noshowmode
 
-" Terminal mode
-tnoremap <Esc> <C-\><C-n>:q!<CR>
 
 " Don't display preview by default
 set completeopt-=preview
 
-" nvim diff 
-" Map dp and do for lines instead of blocks
-nnoremap <silent> <Leader>dp V:diffput<cr>
-nnoremap <silent> <Leader>dg V:diffget<cr>
 
-" Space to clear highlight
-nnoremap <c-h> :nohlsearch<Bar>:echo<CR>
+set hidden
 
 " netrw preview file triggered by p 
 let g:netrw_preview = 1
 
-" Star doesn't jump to the next match
-nnoremap * *``
+" Quickfix toggle
+let g:qf_toggle = 1
+function! QFToggle()
+    if g:qf_toggle
+            :copen
+        let g:qf_toggle = 0
+    else
+            :cclose
+        let g:qf_toggle = 1
+    endif
+endfunction
 
 
 
@@ -83,6 +80,9 @@ Plug 'elzr/vim-json'
 Plug 'tpope/vim-fugitive'
 Plug 'junegunn/goyo.vim'
 Plug 'easymotion/vim-easymotion'
+Plug 'vimwiki/vimwiki'
+Plug 'junegunn/vim-peekaboo'
+Plug 'rraks/pyro'
 call plug#end()
 
 
@@ -151,16 +151,8 @@ let g:LanguageClient_rootMarkers = {
 let g:LanguageClient_useFloatingHover = 1
 let g:LanguageClient_useVirtualText = 0
 
-" Maps for Language client 
-set hidden
-nnoremap <F5> :call LanguageClient_contextMenu()<CR>
-nnoremap <silent> K :call LanguageClient#textDocument_hover()<CR>
-nnoremap <silent> gd :call LanguageClient#textDocument_definition()<CR>
-nnoremap <silent> <F2> :call LanguageClient#textDocument_rename()<CR>
-
 
 " Toggle Language Client
-nnoremap <leader><leader>g :call LCToggle()<cr>
 let g:lc_toggle = 1
 function! LCToggle()
     if g:lc_toggle
@@ -172,27 +164,12 @@ function! LCToggle()
     endif
 endfunction
 
-" Toggle Quickfix
-nnoremap <leader>q :call QFToggle()<cr>
-let g:qf_toggle = 1
-function! QFToggle()
-    if g:qf_toggle
-            :copen
-        let g:qf_toggle = 0
-    else
-            :cclose
-        let g:qf_toggle = 1
-    endif
-endfunction
 
 
 """"""""""""""""""
 " Neo-snippet
 """"""""""""""""""
 " Plugin key-mappings.
-imap <C-k>     <Plug>(neosnippet_expand_or_jump)
-smap <C-k>     <Plug>(neosnippet_expand_or_jump)
-xmap <C-k>     <Plug>(neosnippet_expand_target)
 " For conceal markers.
 let g:neosnippet#enable_completed_snippet = 1
 " set conceallevel=2 concealcursor=niv
@@ -203,12 +180,6 @@ let g:neosnippet#enable_completed_snippet = 1
 """"""""""""""""""
 let g:tex_conceal = ""
 "<{}>"
-
-
-""""""""""""""""""
-" TagBar
-""""""""""""""""""
-nmap <F8> :TagbarToggle<CR>
 
 
 """"""""""""""""""
@@ -234,17 +205,6 @@ let g:echodoc#type = 'echo'
 " FZF
 """"""""""""""""""
 " Commands history
-nnoremap <leader>c :Commands <CR>
-" Commands history
-nnoremap <leader>h :History: <CR>
-" Search history
-nnoremap <leader>s :History/ <CR>
-" Normal mode Maps
-nnoremap <leader>m :Maps <CR>
-" Lines with search
-nnoremap <leader>l :Lines <CR>
-nnoremap <leader>g :GFiles? <CR>
-nnoremap <leader><leader>h :Helptags <CR>
 " Files
 command! -bang -nargs=? -complete=dir Files
   \ call fzf#vim#files(<q-args>, fzf#vim#with_preview(), <bang>0)
@@ -255,31 +215,29 @@ command! -bang -nargs=* Rg
   \ call fzf#vim#grep(
   \   'rg --column --line-number --no-heading --color=always --smart-case '.shellescape(<q-args>), 1,
   \           fzf#vim#with_preview(), <bang>0)
-" Rg
-nnoremap <leader>r :Rg <CR>
 
 " Floating window
 set winblend=0
 
 hi NormalFloat guibg=None
 if exists('g:fzf_colors.bg')
-call remove(g:fzf_colors, 'bg')
+    call remove(g:fzf_colors, 'bg')
 endif
 
 if stridx($FZF_DEFAULT_OPTS, '--border') == -1
-let $FZF_DEFAULT_OPTS .= ' --border'
+    let $FZF_DEFAULT_OPTS .= ' --border'
 endif
 
 function! FloatingFZF()
-let width = float2nr(&columns * 0.8)
-let height = float2nr(&lines * 0.6)
-let opts = { 'relative': 'editor',
-           \ 'row': (&lines - height) / 2,
-           \ 'col': (&columns - width) / 2,
-           \ 'width': width,
-           \ 'height': height }
+    let width = float2nr(&columns * 0.8)
+    let height = float2nr(&lines * 0.6)
+    let opts = { 'relative': 'editor',
+               \ 'row': (&lines - height) / 2,
+               \ 'col': (&columns - width) / 2,
+               \ 'width': width,
+               \ 'height': height }
 
-call nvim_open_win(nvim_create_buf(v:false, v:true), v:true, opts)
+    call nvim_open_win(nvim_create_buf(v:false, v:true), v:true, opts)
 endfunction
 
 let g:fzf_layout = { 'window': 'call FloatingFZF()' }
@@ -292,10 +250,156 @@ let g:fzf_layout = { 'window': 'call FloatingFZF()' }
 " Disable default mappings
 let g:EasyMotion_do_mapping = 1
 " s to start 2-searh
-nmap s <Plug>(easymotion-overwin-f)
-nmap s <Plug>(easymotion-overwin-f2)
 " Turn on case-insensitive feature
 let g:EasyMotion_smartcase = 1
 " JK motions: Line motions
-map <Leader>j <Plug>(easymotion-j)
-map <Leader>k <Plug>(easymotion-k)
+
+
+
+""""""""""""""""""
+" VimWiki
+""""""""""""""""""
+let g:vimwiki_list = [{'path': '~/.vimwiki/',
+                      \ 'syntax': 'markdown', 'ext': '.md'}]
+let g:conceallevel=3
+let g:concealcursor="i"
+
+
+""""""""""""""""""
+" Floating term
+""""""""""""""""""
+let s:float_term_border_win = 0
+let s:float_term_win = 0
+function! FloatTerm(...)
+  " Configuration
+  let height = float2nr((&lines - 2) * 0.7)
+  let row = float2nr((&lines - height) / 2)
+  let width = float2nr(&columns * 0.7)
+  let col = float2nr((&columns - width) / 2)
+  " Border Window
+  let border_opts = {
+        \ 'relative': 'editor',
+        \ 'row': row - 1,
+        \ 'col': col - 2,
+        \ 'width': width + 4,
+        \ 'height': height + 2,
+        \ 'style': 'minimal'
+        \ }
+  " Terminal Window
+  let opts = {
+        \ 'relative': 'editor',
+        \ 'row': row,
+        \ 'col': col,
+        \ 'width': width,
+        \ 'height': height,
+        \ 'style': 'minimal'
+        \ }
+  let top = "╭" . repeat("─", width + 2) . "╮"
+  let mid = "│" . repeat(" ", width + 2) . "│"
+  let bot = "╰" . repeat("─", width + 2) . "╯"
+  let lines = [top] + repeat([mid], height) + [bot]
+  let bbuf = nvim_create_buf(v:false, v:true)
+  call nvim_buf_set_lines(bbuf, 0, -1, v:true, lines)
+  let s:float_term_border_win = nvim_open_win(bbuf, v:true, border_opts)
+  let buf = nvim_create_buf(v:false, v:true)
+  let s:float_term_win = nvim_open_win(buf, v:true, opts)
+  " Styling
+  call setwinvar(s:float_term_border_win, '&winhl', 'Normal:Normal')
+  call setwinvar(s:float_term_win, '&winhl', 'Normal:Normal')
+  if a:0 == 0
+    terminal
+  else
+    call termopen(a:1)
+  endif
+  startinsert
+  " Close border window when terminal window close
+  autocmd TermClose * ++once :bd! | call nvim_win_close(s:float_term_border_win, v:true)
+endfunction
+
+""""""""""""""""""
+" Pyro
+""""""""""""""""""
+let g:pyro_macro_path="/home/thepro/.vim/macros"
+
+
+
+""""""""""""""""""
+" Insert Mappings
+""""""""""""""""""
+" Remapped Esc to <c-c>
+inoremap <c-c> <Esc>
+
+" Quick save
+inoremap <c-s> <Esc> :w <CR>
+
+""""""""""""""""""
+" Normal Mappings
+""""""""""""""""""
+
+" Quick Save
+nnoremap <c-s> :w <CR>
+
+" LanguageClient 
+nnoremap <F5> :call LanguageClient_contextMenu()<CR>
+nnoremap <silent> K :call LanguageClient#textDocument_hover()<CR>
+nnoremap <silent> gd :call LanguageClient#textDocument_definition()<CR>
+nnoremap <silent> <F2> :call LanguageClient#textDocument_rename()<CR>
+
+" Space to clear highlight
+nnoremap <c-h> :nohlsearch<Bar>:echo<CR>
+
+" Star doesn't jump to the next match
+nnoremap * *``
+
+
+""""""""""""""""""
+" Leader Mappings
+""""""""""""""""""
+" leader
+let mapleader = "\<Space>"
+
+" nvim diff 
+" Map dp and do for lines instead of blocks
+nnoremap <silent> <leader>dp V:diffput<cr>
+nnoremap <silent> <leader>dg V:diffget<cr>
+
+" LanguageClient
+nnoremap <leader><leader>g :call LCToggle()<cr>
+
+" Toggle Quickfix
+nnoremap <leader>q :call QFToggle()<cr>
+
+" Toggle Tagbar
+nmap <leader>t :TagbarToggle<CR>
+nnoremap <leader>c :Commands <CR>
+
+" FZF
+" Commands history
+nnoremap <leader>h :History: <CR>
+" Search history
+nnoremap <leader>s :History/ <CR>
+" Normal mode Maps
+nnoremap <leader>m :Maps <CR>
+" Lines with search
+nnoremap <leader>l :Lines <CR>
+nnoremap <leader><leader>h :Helptags <CR>
+" Rg
+nnoremap <leader>r :Rg <CR>
+
+" EasyMotion
+map <leader>j <Plug>(easymotion-j)
+map <leader>k <Plug>(easymotion-k)
+nmap s <Plug>(easymotion-overwin-f)
+nmap s <Plug>(easymotion-overwin-f2)
+
+" Neosnippet
+imap <C-k>     <Plug>(neosnippet_expand_or_jump)
+smap <C-k>     <Plug>(neosnippet_expand_or_jump)
+xmap <C-k>     <Plug>(neosnippet_expand_target)
+
+
+""""""""""""""""""
+" Terminal Mappings
+""""""""""""""""""
+tnoremap <Esc> <C-\><C-n>
+
