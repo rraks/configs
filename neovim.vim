@@ -7,14 +7,14 @@
 """"""""""""""""""
 
 " Neovim python env
-let g:python3_host_prog = '/home/thepro/anaconda3/bin/python'
+let g:python3_host_prog = '/home/rraks/venvs/sci/bin/python'
 
 " Backups
 set backup
 set backupdir=~/.vimbackup
 au BufWritePre * let &bex = substitute(expand('%:p:h'), '/', ':', 'g') . strftime(';%FT%T')
 " Put below in crontab
-" * * * * * find /home/thepro/.vimbackup/* -type f -name '*;*' -mtime +1 -delete
+" * * * * * find /home/rraks/.vimbackup/* -type f -name '*;*' -mtime +1 -delete
 
 
 " Basic indentation configs
@@ -24,9 +24,11 @@ set expandtab
 set backspace=indent,eol,start
 set smartcase
 set incsearch
+set termguicolors
 
 " Global Clipboard
 set clipboard+=unnamed
+
 
 " Don't show mode in echo bar (for echodoc)
 set noshowmode
@@ -34,7 +36,6 @@ set noshowmode
 
 " Don't display preview by default
 set completeopt-=preview
-
 
 set hidden
 
@@ -53,6 +54,8 @@ function! QFToggle()
     endif
 endfunction
 
+" True Colors
+set tgc
 
 
 """"""""""""""""""
@@ -102,8 +105,10 @@ augroup END
 " Theme
 filetype plugin indent on
 syntax enable
+let g:gruvbox_contrast_dark='hard'
 colorscheme gruvbox	
 set background=dark
+
 " Lightline
 let g:lightline = {
 			\ 'active': {
@@ -127,10 +132,11 @@ let g:lightline = {
 let g:deoplete#enable_at_startup = 1
 
 " Rust for deoplete
-let g:deoplete#sources#rust#racer_binary='/home/thepro/.cargo/bin/racer'
-let g:deoplete#sources#rust#rust_source_path='/home/thepro/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/src'
+let g:deoplete#sources#rust#racer_binary='/home/rraks/.cargo/bin/racer'
+let g:deoplete#sources#rust#rust_source_path='/home/rraks/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/src'
 let g:deoplete#sources#rust#show_duplicates=1
 let g:autofmt_autosave = 1
+
 
 
 """"""""""""""""""
@@ -140,8 +146,8 @@ let g:autofmt_autosave = 1
 let g:LanguageClient_autoStart = 1
 let g:LanguageClient_diagnosticsMaxSeverity = "Error"
 let g:LanguageClient_serverCommands = {
-    \ 'python': ['~/anaconda3/bin/pyls'],
-    \ 'go': ['bingo','-disable-func-snippet'],
+    \ 'python': ['/home/rraks/venvs/sci/bin/pyls'],
+    \ 'go': ['/home/rraks/go/bin/gopls'],
     \ }
 let g:LanguageClient_rootMarkers = {
         \ 'go': ['.git', 'go.mod'],
@@ -149,7 +155,7 @@ let g:LanguageClient_rootMarkers = {
 
 " Language client appearances 
 let g:LanguageClient_useFloatingHover = 1
-let g:LanguageClient_useVirtualText = 0
+let g:LanguageClient_useVirtualText = "CodeLens"
 
 
 " Toggle Language Client
@@ -164,6 +170,10 @@ function! LCToggle()
     endif
 endfunction
 
+
+""""""""""""""""""
+" NVIM-LSP
+""""""""""""""""""
 
 
 """"""""""""""""""
@@ -271,12 +281,10 @@ let g:concealcursor="i"
 let s:float_term_border_win = 0
 let s:float_term_win = 0
 function! FloatTerm(...)
-  " Configuration
   let height = float2nr((&lines - 2) * 0.7)
   let row = float2nr((&lines - height) / 2)
   let width = float2nr(&columns * 0.7)
   let col = float2nr((&columns - width) / 2)
-  " Border Window
   let border_opts = {
         \ 'relative': 'editor',
         \ 'row': row - 1,
@@ -285,7 +293,6 @@ function! FloatTerm(...)
         \ 'height': height + 2,
         \ 'style': 'minimal'
         \ }
-  " Terminal Window
   let opts = {
         \ 'relative': 'editor',
         \ 'row': row,
@@ -303,7 +310,6 @@ function! FloatTerm(...)
   let s:float_term_border_win = nvim_open_win(bbuf, v:true, border_opts)
   let buf = nvim_create_buf(v:false, v:true)
   let s:float_term_win = nvim_open_win(buf, v:true, opts)
-  " Styling
   call setwinvar(s:float_term_border_win, '&winhl', 'Normal:Normal')
   call setwinvar(s:float_term_win, '&winhl', 'Normal:Normal')
   if a:0 == 0
@@ -312,14 +318,13 @@ function! FloatTerm(...)
     call termopen(a:1)
   endif
   startinsert
-  " Close border window when terminal window close
   autocmd TermClose * ++once :bd! | call nvim_win_close(s:float_term_border_win, v:true)
 endfunction
 
 """"""""""""""""""
 " Pyro
 """"""""""""""""""
-let g:pyro_macro_path="/home/thepro/.vim/macros"
+let g:pyro_macro_path="/home/rraks/.vim/macros"
 
 
 
