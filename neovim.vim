@@ -1,4 +1,4 @@
-""""""""""""""""""""""""""""""""""""
+"""""""""""""""""""""""""""""""""""
 " rraks' NeoVim setup
 """"""""""""""""""""""""""""""""""""
 
@@ -37,7 +37,6 @@ set noshowmode
 " Don't display preview by default
 set completeopt-=preview
 
-set hidden
 
 " netrw preview file triggered by p 
 let g:netrw_preview = 1
@@ -74,7 +73,6 @@ Plug 'itchyny/lightline.vim'
 Plug 'junegunn/fzf.vim'
 Plug 'Shougo/echodoc.vim'
 Plug 'lervag/vimtex'
-Plug 'sebastianmarkow/deoplete-rust'
 Plug 'majutsushi/tagbar'
 Plug 'Shougo/neosnippet.vim'
 Plug 'Shougo/neosnippet-snippets'
@@ -85,7 +83,12 @@ Plug 'junegunn/goyo.vim'
 Plug 'easymotion/vim-easymotion'
 Plug 'vimwiki/vimwiki'
 Plug 'junegunn/vim-peekaboo'
+Plug 'tpope/vim-repeat'
+Plug 'tpope/vim-unimpaired'
+Plug 'simeji/winresizer'
+Plug 'dhruvasagar/vim-zoom'
 Plug 'rraks/pyro'
+Plug 'dhruvasagar/vim-table-mode'
 call plug#end()
 
 
@@ -95,12 +98,12 @@ call plug#end()
 " Keep dummy line to prevent LCN from messing view
 set signcolumn=yes
 " Relative Line numbers
-set number relativenumber
-augroup numbertoggle
-  autocmd!
-  autocmd BufEnter,FocusGained,InsertLeave * set relativenumber
-  autocmd BufLeave,FocusLost,InsertEnter   * set norelativenumber
-augroup END
+" set number relativenumber
+" augroup numbertoggle
+"   autocmd!
+"   autocmd BufEnter,FocusGained,InsertLeave * set relativenumber
+"   autocmd BufLeave,FocusLost,InsertEnter   * set norelativenumber
+" augroup END
 
 " Theme
 filetype plugin indent on
@@ -110,18 +113,21 @@ colorscheme gruvbox
 set background=dark
 
 " Lightline
+" Lightline
 let g:lightline = {
 			\ 'active': {
-			\   'left': [ [ 'mode', 'paste' ],
-			\             [ 'gitbranch', 'readonly', 'filename', 'modified' ] ],
+			\   'left': [ [ 'mode', 'paste'],
+			\             [ 'gitbranch', 'readonly', 'filename', 'modified', 'vimzoom'  ] ],
             \   'right': [ [ 'lineinfo' ],
             \              [ 'percent' ],
             \              [ 'filetype' ] ]
 			\ },
 			\ 'component_function': {
-			\   'gitbranch': 'fugitive#head'
+			\   'gitbranch': 'fugitive#head',
+            \   'vimzoom': 'zoom#statusline'
 			\ },
 			\ }
+
 
 
 """"""""""""""""""
@@ -132,9 +138,6 @@ let g:lightline = {
 let g:deoplete#enable_at_startup = 1
 
 " Rust for deoplete
-let g:deoplete#sources#rust#racer_binary='/home/rraks/.cargo/bin/racer'
-let g:deoplete#sources#rust#rust_source_path='/home/rraks/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/src'
-let g:deoplete#sources#rust#show_duplicates=1
 let g:autofmt_autosave = 1
 
 
@@ -144,10 +147,11 @@ let g:autofmt_autosave = 1
 """"""""""""""""""
 
 let g:LanguageClient_autoStart = 1
-let g:LanguageClient_diagnosticsMaxSeverity = "Error"
+let g:LanguageClient_diagnosticsMaxSeverity = "Warning"
 let g:LanguageClient_serverCommands = {
     \ 'python': ['/home/rraks/venvs/sci/bin/pyls'],
     \ 'go': ['/home/rraks/go/bin/gopls'],
+    \ 'java': ['/usr/local/bin/jdtls', '-data', getcwd()],
     \ }
 let g:LanguageClient_rootMarkers = {
         \ 'go': ['.git', 'go.mod'],
@@ -155,7 +159,7 @@ let g:LanguageClient_rootMarkers = {
 
 " Language client appearances 
 let g:LanguageClient_useFloatingHover = 1
-let g:LanguageClient_useVirtualText = "CodeLens"
+let g:LanguageClient_useVirtualText = "No"
 
 
 " Toggle Language Client
@@ -196,6 +200,8 @@ let g:tex_conceal = ""
 " Vim-json
 """"""""""""""""""
 let g:vim_json_syntax_conceal = 0
+" Consider `.jsonld` as JSON
+autocmd BufNewFile,BufRead *.jsonld set filetype=json
 
 
 """"""""""""""""""
@@ -275,51 +281,13 @@ let g:conceallevel=3
 let g:concealcursor="i"
 
 
+
 """"""""""""""""""
-" Floating term
+" Rainbow Parantheses
 """"""""""""""""""
-let s:float_term_border_win = 0
-let s:float_term_win = 0
-function! FloatTerm(...)
-  let height = float2nr((&lines - 2) * 0.7)
-  let row = float2nr((&lines - height) / 2)
-  let width = float2nr(&columns * 0.7)
-  let col = float2nr((&columns - width) / 2)
-  let border_opts = {
-        \ 'relative': 'editor',
-        \ 'row': row - 1,
-        \ 'col': col - 2,
-        \ 'width': width + 4,
-        \ 'height': height + 2,
-        \ 'style': 'minimal'
-        \ }
-  let opts = {
-        \ 'relative': 'editor',
-        \ 'row': row,
-        \ 'col': col,
-        \ 'width': width,
-        \ 'height': height,
-        \ 'style': 'minimal'
-        \ }
-  let top = "╭" . repeat("─", width + 2) . "╮"
-  let mid = "│" . repeat(" ", width + 2) . "│"
-  let bot = "╰" . repeat("─", width + 2) . "╯"
-  let lines = [top] + repeat([mid], height) + [bot]
-  let bbuf = nvim_create_buf(v:false, v:true)
-  call nvim_buf_set_lines(bbuf, 0, -1, v:true, lines)
-  let s:float_term_border_win = nvim_open_win(bbuf, v:true, border_opts)
-  let buf = nvim_create_buf(v:false, v:true)
-  let s:float_term_win = nvim_open_win(buf, v:true, opts)
-  call setwinvar(s:float_term_border_win, '&winhl', 'Normal:Normal')
-  call setwinvar(s:float_term_win, '&winhl', 'Normal:Normal')
-  if a:0 == 0
-    terminal
-  else
-    call termopen(a:1)
-  endif
-  startinsert
-  autocmd TermClose * ++once :bd! | call nvim_win_close(s:float_term_border_win, v:true)
-endfunction
+"set to 0 if you want to enable it later via :RainbowToggle
+let g:rainbow_active = 1
+
 
 """"""""""""""""""
 " Pyro
@@ -336,6 +304,7 @@ inoremap <c-c> <Esc>
 
 " Quick save
 inoremap <c-s> <Esc> :w <CR>
+
 
 """"""""""""""""""
 " Normal Mappings
@@ -355,6 +324,12 @@ nnoremap <c-h> :nohlsearch<Bar>:echo<CR>
 
 " Star doesn't jump to the next match
 nnoremap * *``
+
+" Vim-Zoom
+nmap <C-W>z <Plug>(zoom-toggle)
+
+" Winresizer
+nnoremap <C-e> :WinResizerStartResize <CR>
 
 
 """"""""""""""""""
@@ -387,9 +362,14 @@ nnoremap <leader>s :History/ <CR>
 nnoremap <leader>m :Maps <CR>
 " Lines with search
 nnoremap <leader>l :Lines <CR>
+" Help
 nnoremap <leader><leader>h :Helptags <CR>
 " Rg
 nnoremap <leader>r :Rg <CR>
+" Buffers
+nnoremap <leader>b :Buffers <CR>
+" Files
+nnoremap <leader>f :Files <CR>
 
 " EasyMotion
 map <leader>j <Plug>(easymotion-j)

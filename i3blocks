@@ -1,0 +1,101 @@
+# i3blocks config file
+#
+# Please see man i3blocks for a complete reference!
+# The man page is also hosted at http://vivien.github.io/i3blocks
+#
+# List of valid properties:
+#
+# align
+# color
+# background
+# border
+# command
+# full_text
+# instance
+# interval
+# label
+# min_width
+# name
+# separator
+# separator_block_width
+# short_text
+# signal
+# urgent
+
+# Global properties
+#
+# The top properties below are applied to every block, but can be overridden.
+# Each block command defaults to the script name to avoid boilerplate.
+SCRIPT_DIR=/home/rraks/.config/i3blocks
+separator_block_width=30
+markup=none
+
+[volume-pulseaudio]
+command=$SCRIPT_DIR/volume-pulseaudio/volume-pulseaudio
+LONG_FORMAT="${SYMB}${VOL}%"
+interval=persist
+SUBSCRIBE=1
+
+# Generic media player support
+#
+# This displays "ARTIST - SONG" if a music is playing.
+# Supported players are: spotify, vlc, audacious, xmms2, mplayer, and others.
+[mediaplayer]
+label=
+interval=5
+signal=10
+
+# CPU usage
+#
+# The script may be called with -w and -c switches to specify thresholds,
+# see the script for details.
+[cpu_usage2]
+command=$SCRIPT_DIR/cpu_usage2/cpu_usage2
+label=
+interval=30
+markup=pango
+interval=persist
+#separator=false
+#
+[memory]
+command=$SCRIPT_DIR/memory/memory
+label=MEM
+interval=30
+
+
+
+# Battery indicator
+#
+# The battery instance defaults to 0.
+[battery2]
+command=$SCRIPT_DIR/battery2/battery2
+markup=pango
+interval=10
+
+[backlight]
+command=$SCRIPT_DIR/backlight/backlight
+markup=pango
+label=☀
+interval=20
+
+[wifi]
+command=$SCRIPT_DIR/wifi/wifi
+label=
+instance=wlp2s0
+interval=30
+
+# Date Time
+#
+[rofi-calendar]
+command=$SCRIPT_DIR/rofi-calendar/rofi-calendar
+interval=3600
+HEIGHT=180
+WIDTH=220
+LABEL= 
+
+[time]
+label=
+command=date "+%H:%M:%S"
+interval=1
+
+
