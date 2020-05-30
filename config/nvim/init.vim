@@ -26,6 +26,7 @@ set expandtab
 set backspace=indent,eol,start
 set smartcase
 set incsearch
+filetype plugin indent on
 " set termguicolors
 
 " Global Clipboard
@@ -105,6 +106,7 @@ Plug 'rraks/pyro'
 Plug 'dhruvasagar/vim-table-mode'
 Plug 'voldikss/vim-floaterm'
 Plug 'ap/vim-css-color'
+Plug 'shougo/echodoc'
 call plug#end()
 
 
@@ -431,3 +433,40 @@ nnoremap <silent> <space>p  :<C-u>CocListResume<CR>
 
 nnoremap <expr><C-f> coc#util#has_float() ? coc#util#float_scroll(1) : "\<C-f>"
 nnoremap <expr><C-b> coc#util#has_float() ? coc#util#float_scroll(0) : "\<C-b>"
+
+
+" Snippets
+" Use <C-l> for trigger snippet expand.
+imap <C-l> <Plug>(coc-snippets-expand)
+
+" Use <C-j> for select text for visual placeholder of snippet.
+vmap <C-j> <Plug>(coc-snippets-select)
+
+" Use <C-j> for jump to next placeholder, it's default of coc.nvim
+let g:coc_snippet_next = '<c-j>'
+
+" Use <C-k> for jump to previous placeholder, it's default of coc.nvim
+let g:coc_snippet_prev = '<c-k>'
+
+" Use <C-j> for both expand and jump (make expand higher priority.)
+imap <C-j> <Plug>(coc-snippets-expand-jump)
+
+
+inoremap <silent><expr> <TAB>
+      \ pumvisible() ? coc#_select_confirm() :
+      \ coc#expandableOrJumpable() ? "\<C-r>=coc#rpc#request('doKeymap', ['snippets-expand-jump',''])\<CR>" :
+      \ <SID>check_back_space() ? "\<TAB>" :
+      \ coc#refresh()
+
+function! s:check_back_space() abort
+  let col = col('.') - 1
+  return !col || getline('.')[col - 1]  =~# '\s'
+endfunction
+
+
+
+""""""""""""""""""
+" Language specific properties
+""""""""""""""""""
+autocmd FileType typescript setlocal shiftwidth=2 softtabstop=2 expandtab
+autocmd FileType html setlocal shiftwidth=2 softtabstop=2 expandtab

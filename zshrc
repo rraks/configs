@@ -1,17 +1,33 @@
+# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
+# Initialization code that may require console input (password prompts, [y/n]
+# confirmations, etc.) must go above this block; everything else may go below.
+if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+fi
+
+
 ###################################
 # rraks' zsh config
 #
 ###################################
 
 
-
-
 ##################
 # Common
 ##################
+export TERMINAL='st'
 export EDITOR='nvim' 
 export LANG=en_US.UTF-8
 export LC_CTYPE=en_US.UTF-8
+export DISABLE_AUTO_TITLE="true"
+
+
+##################
+# Theme
+##################
+source ~/powerlevel10k/powerlevel10k.zsh-theme
+# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
+[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
 
 ##################
@@ -24,7 +40,6 @@ SAVEHIST=10000000
 setopt BANG_HIST                 # Treat the '!' character specially during expansion.
 setopt EXTENDED_HISTORY          # Write the history file in the ":start:elapsed;command" format.
 setopt INC_APPEND_HISTORY        # Write to the history file immediately, not when the shell exits.
-setopt SHARE_HISTORY             # Share history between all sessions.
 setopt HIST_EXPIRE_DUPS_FIRST    # Expire duplicate entries first when trimming history.
 setopt HIST_IGNORE_DUPS          # Don't record an entry that was just recorded again.
 setopt HIST_IGNORE_ALL_DUPS      # Delete old recorded entry if new entry is a duplicate.
@@ -34,6 +49,7 @@ setopt HIST_SAVE_NO_DUPS         # Don't write duplicate entries in the history 
 setopt HIST_REDUCE_BLANKS        # Remove superfluous blanks before recording entry.
 setopt HIST_VERIFY               # Don't execute immediately upon history expansion.
 setopt HIST_BEEP                 # Beep when accessing nonexistent history.
+
 
 
 ##################
@@ -70,33 +86,42 @@ bindkey '^e' edit-command-line
 # Syntax highlight
 ##################
 source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh 2>/dev/null
-source /home/thepro/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+source /home/rraks/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
 
-##################
-# Theme
-##################
-source ~/powerlevel10k/powerlevel10k.zsh-theme
-# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
-[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
 
 ##################
 # FZF
 ##################
 export FZF_CTRL_T_COMMAND='rg --files'
-export DISABLE_AUTO_TITLE="true"
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+
+
+##################
+# JAVA
+##################
+export JAVA_HOME=/usr/lib/jvm/default
 
 
 ##################
 # Terminal name
 ##################
-case $TERM in
-  xterm*)
-    precmd () {print -Pn "\e]0;%~\a"}
-    ;;
-esac
+# chpwd() {
+#   [[ -t 1 ]] || return
+#   case $TERM in
+#     sun-cmd) print -Pn "\e]l%~\e\\"
+#       ;;
+#     *xterm*|rxvt|(dt|k|E)term) print -Pn "\e]2;%~\a"
+#       ;;
+#   esac
+# }
+
+function precmd () {
+  window_title="\033]0;${PWD##*/}\007"
+  echo -ne "$window_title"
+}
 
 
 ##################
@@ -123,8 +148,10 @@ alias xo='xdg-open'
 # Chrome
 alias chrome='google-chrome'
 
+# LazyGit
+alias lg='lazygit'
 
-
+alias l='ls'
 
 ##################
 # Clipboard
@@ -166,18 +193,14 @@ local paste_widgets=(
 )
 
 
-
 ##################
-# LazyGit
+# npm
 ##################
-alias lg='lazygit'
-
+export PATH=$HOME/.npm-global/bin:$PATH
 
 
 ##################
-# PlantUML
+# xhost
+# For docker gui environment
 ##################
-alias plantuml='java -jar ~/.local/share/plantuml/plantuml.jar'
-
-
-
+# xhost +local:root > /dev/null 2>&1
