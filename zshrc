@@ -20,7 +20,8 @@ export EDITOR='nvim'
 export LANG=en_US.UTF-8
 export LC_CTYPE=en_US.UTF-8
 export DISABLE_AUTO_TITLE="true"
-
+# Prevent globbing errors
+unsetopt no_match
 
 ##################
 # Theme

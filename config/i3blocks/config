@@ -51,7 +51,6 @@ signal=10
 # see the script for details.
 [cpu_usage2]
 command=$SCRIPT_DIR/cpu_usage2/cpu_usage2
-label=
 interval=30
 markup=pango
 interval=persist

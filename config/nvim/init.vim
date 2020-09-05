@@ -18,6 +18,8 @@ au BufWritePre * let &bex = substitute(expand('%:p:h'), '/', ':', 'g') . strftim
 " Put below in crontab
 " * * * * * find /home/rraks/.vimbackup/* -type f -name '*;*' -mtime +1 -delete
 
+" More command history
+set history=1000
 
 " Basic indentation configs
 set tabstop=4
@@ -80,6 +82,10 @@ nnoremap * *``
 " Terminal Mappings
 tnoremap <Esc> <C-\><C-n>
 
+
+" Toggle line numbers
+nnoremap <leader><leader>l :set invnumber<cr>
+
 """"""""""""""""""
 " Vim Plug
 """"""""""""""""""
@@ -94,19 +100,16 @@ Plug 'lervag/vimtex'
 Plug 'majutsushi/tagbar'
 Plug 'elzr/vim-json'
 Plug 'tpope/vim-fugitive'
-Plug 'junegunn/goyo.vim'
 Plug 'easymotion/vim-easymotion'
 Plug 'vimwiki/vimwiki'
+Plug 'vim-pandoc/vim-pandoc'
 Plug 'junegunn/vim-peekaboo'
-Plug 'tpope/vim-repeat'
-Plug 'tpope/vim-unimpaired'
 Plug 'simeji/winresizer'
 Plug 'dhruvasagar/vim-zoom'
-Plug 'rraks/pyro'
 Plug 'dhruvasagar/vim-table-mode'
+Plug 'rraks/pyro'
 Plug 'voldikss/vim-floaterm'
 Plug 'ap/vim-css-color'
-Plug 'shougo/echodoc'
 call plug#end()
 
 
@@ -261,8 +264,17 @@ nmap s <Plug>(easymotion-overwin-f2)
 """"""""""""""""""
 " VimWiki
 """"""""""""""""""
-let g:vimwiki_list = [{'path': '~/.vimwiki/',
-                      \ 'syntax': 'markdown', 'ext': '.md'}]
+" pip install vimwiki-markdown
+let g:vimwiki_list = [{
+	\ 'path': '~/.vimwiki',
+	\ 'template_path': '~/.vimwiki/templates/',
+	\ 'template_default': 'default',
+	\ 'syntax': 'markdown',
+	\ 'ext': '.md',
+	\ 'path_html': '~/.vimwiki/site_html/',
+	\ 'custom_wiki2html': 'vimwiki_markdown',
+	\ 'template_ext': '.tpl'}]
+
 let g:conceallevel=3
 let g:concealcursor="i"
 
@@ -298,31 +310,18 @@ nnoremap <C-e> :WinResizerStartResize <CR>
 
 """"""""""""""""""
 " COC
+"
+" Some notes:
+"   1. In case jdtls crashes
+"       - Delete all workspaces in .config/coc/extensions/coc-java-data
 """"""""""""""""""
-" TextEdit might fail if hidden is not set.
 set hidden
-
-" Some servers have issues with backup files, see #649.
 set nobackup
 set nowritebackup
-
-" Give more space for displaying messages.
-" set cmdheight=2
-
-" Having longer updatetime (default is 4000 ms = 4 s) leads to noticeable
-" delays and poor user experience.
 set updatetime=300
-
-" Don't pass messages to |ins-completion-menu|.
 set shortmess+=c
-
-" Always show the signcolumn, otherwise it would shift the text each time
-" diagnostics appear/become resolved.
 set signcolumn=yes
-
 " Use tab for trigger completion with characters ahead and navigate.
-" NOTE: Use command ':verbose imap <tab>' to make sure tab is not mapped by
-" other plugin before putting this into your config.
 inoremap <silent><expr> <TAB>
       \ pumvisible() ? "\<C-n>" :
       \ <SID>check_back_space() ? "\<TAB>" :
@@ -373,8 +372,8 @@ autocmd CursorHold * silent call CocActionAsync('highlight')
 nmap <leader>rn <Plug>(coc-rename)
 
 " Formatting selected code.
-xmap <leader>f  <Plug>(coc-format-selected)
-nmap <leader>f  <Plug>(coc-format-selected)
+xmap <leader><leader>f  <Plug>(coc-format-selected)
+nmap <leader><leader>f  <Plug>(coc-format-selected)
 
 augroup mygroup
   autocmd!
@@ -404,8 +403,8 @@ omap af <Plug>(coc-funcobj-a)
 " Use <TAB> for selections ranges.
 " NOTE: Requires 'textDocument/selectionRange' support from the language server.
 " coc-tsserver, coc-python are the examples of servers that support it.
-nmap <silent> <TAB> <Plug>(coc-range-select)
-xmap <silent> <TAB> <Plug>(coc-range-select)
+nmap <silent> <C-TAB> <Plug>(coc-range-select)
+xmap <silent> <C-TAB> <Plug>(coc-range-select)
 
 " Add `:Format` command to format current buffer.
 command! -nargs=0 Format :call CocAction('format')
@@ -469,4 +468,5 @@ endfunction
 " Language specific properties
 """"""""""""""""""
 autocmd FileType typescript setlocal shiftwidth=2 softtabstop=2 expandtab
+autocmd FileType java setlocal shiftwidth=2 softtabstop=2 expandtab
 autocmd FileType html setlocal shiftwidth=2 softtabstop=2 expandtab

@@ -33,9 +33,10 @@ Fzf gives fuzzy completion for system paths
 
 ## Configure
 1. Install plugins 
+2. Install node
 `nvim `
 ` :PlugInstall`
-2. The above will install coc.nvim which is the completion manager I use. Install any language server from [here](https://github.com/neoclide/coc.nvim/wiki/Language-servers) 
+3. The above will install coc.nvim which is the completion manager I use. Install any language server from [here](https://github.com/neoclide/coc.nvim/wiki/Language-servers) 
    For e.g, for python 
    ` :CocInstall coc-python`
 
