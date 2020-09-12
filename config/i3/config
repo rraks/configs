@@ -133,13 +133,13 @@ bindsym $mod+r mode "resize"
 bar {
         status_command i3blocks
             colors {
-                separator #444444
-                    background #222222
-                    statusline #B1B1B1
-                    focused_workspace #CECECE #CECECE #000000
-                    active_workspace #333333 #333333 #888888
-                    inactive_workspace #CECECE #333333 #f1f1f1
-                    urgent_workspace #eb709b #eb709b #ffffff
+                separator #c0c0c0
+                background #282828
+                statusline #B1B1B1
+                focused_workspace #CECECE #CECECE #000000
+                active_workspace #333333 #333333 #888888
+                inactive_workspace #CECECE #333333 #f1f1f1
+                urgent_workspace #eb709b #eb709b #ffffff
             }
 }
 
@@ -150,14 +150,15 @@ gaps inner 8
 gaps outer 8
 for_window [class=".*"] border pixel 0
 
-# change volume or toggle mute
-bindsym XF86AudioRaiseVolume exec amixer -q -D pulse sset Master 5%+ && pkill -RTMIN+1 i3blocks 
-bindsym XF86AudioLowerVolume exec amixer -q -D pulse sset Master 5%- && pkill -RTMIN+1 i3blocks
-bindsym XF86AudioMute exec amixer -q -D pulse sset Master toggle && pkill -RTMIN+1 i3blocks
+bindsym XF86AudioRaiseVolume exec --no-startup-id ~/.config/i3/volume.sh +1%
+bindsym XF86AudioLowerVolume exec --no-startup-id ~/.config/i3/volume.sh -1%
+bindsym XF86AudioMute exec --no-startup-id ~/.config/i3/volume.sh M
+
+
 
 # Sreen brightness controls
-bindsym XF86MonBrightnessUp exec light -A 10 # increase screen brightness
-bindsym XF86MonBrightnessDown exec light -U 10 # decrease screen brightness
+bindsym XF86MonBrightnessUp exec light -A 5 # increase screen brightness
+bindsym XF86MonBrightnessDown exec light -U 5 # decrease screen brightness
 
 
 # Media player controls
