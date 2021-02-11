@@ -77,7 +77,7 @@ nnoremap <c-s> :w <CR>
 nnoremap <c-h> :nohlsearch<Bar>:echo<CR>
 
 " Star doesn't jump to the next match
-nnoremap * *``
+" nnoremap * *``
 
 " Terminal Mappings
 tnoremap <Esc> <C-\><C-n>
@@ -91,13 +91,12 @@ nnoremap <leader><leader>l :set invnumber<cr>
 """"""""""""""""""
 
 call plug#begin('~/.vim/plugged')
+Plug 'mhinz/vim-startify'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'morhetz/gruvbox'
-Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
+Plug 'dyng/ctrlsf.vim'
 Plug 'itchyny/lightline.vim'
-Plug 'junegunn/fzf.vim'
-Plug 'lervag/vimtex'
-Plug 'majutsushi/tagbar'
+Plug 'rakr/vim-one'
 Plug 'elzr/vim-json'
 Plug 'tpope/vim-fugitive'
 Plug 'easymotion/vim-easymotion'
@@ -110,6 +109,13 @@ Plug 'dhruvasagar/vim-table-mode'
 Plug 'rraks/pyro'
 Plug 'voldikss/vim-floaterm'
 Plug 'ap/vim-css-color'
+Plug 'lambdalisue/gina.vim'
+" Plug 'nvim-treesitter/nvim-treesitter'
+Plug 'liuchengxu/vim-clap'
+Plug 'preservim/tagbar'
+Plug 'tyru/open-browser.vim'
+Plug 'aklt/plantuml-syntax'
+Plug 'weirongxu/plantuml-previewer.vim'
 call plug#end()
 
 
@@ -129,12 +135,17 @@ set signcolumn=yes
 " Theme
 filetype plugin indent on
 syntax enable
-let g:gruvbox_contrast_dark='hard'
-colorscheme gruvbox	
+
+
+" let g:gruvbox_contrast_dark='soft'
+" colorscheme gruvbox	
+" set background=dark
+
+let g:one_allow_italics = 1
 set background=dark
+colorscheme one
 
 
-" Lightline
 " Lightline
 let g:lightline = {
 			\ 'active': {
@@ -148,15 +159,15 @@ let g:lightline = {
 			\   'gitbranch': 'fugitive#head',
             \   'vimzoom': 'zoom#statusline'
 			\ },
+            \ 'colorscheme': 'one'
 			\ }
 
 
 """"""""""""""""""
-" Tagbar
+" Tagbar/Vista
 """"""""""""""""""
 " Toggle Tagbar
 nmap <leader><leader>t :TagbarToggle<CR>
-nnoremap <leader>c :Commands <CR>
 
 
 
@@ -181,69 +192,91 @@ autocmd BufNewFile,BufRead *.jsonld set filetype=json
 autocmd FileType yaml setlocal ts=2 sts=2 sw=2 expandtab
 
 
+""""""""""""""""""
+" Vim-Clap
+""""""""""""""""""
+" External binary
+" :call clap#installer#build_maple()
+" nnoremap <leader>h :History: <CR>
+" Search history
+nnoremap <leader>s :Clap history <CR>
+" Normal mode Maps
+nnoremap <leader>m :Clap maps <CR>
+" Lines with search
+nnoremap <leader>l :Clap blines <CR>
+" Help
+nnoremap <leader><leader>h :Clap help_tags <CR>
+" Rg
+nnoremap <leader>r :Clap grep <CR>
+" Buffers
+nnoremap <leader>b :Clap buffers <CR>
+" Files
+nnoremap <leader>f :Clap files <CR>
+" Project explorer
+nnoremap <leader><leader>f :Clap filer <CR>
 
 """"""""""""""""""
 " FZF
 """"""""""""""""""
 " Commands history
 " Files
-command! -bang -nargs=? -complete=dir Files
-  \ call fzf#vim#files(<q-args>, fzf#vim#with_preview(), <bang>0)
-
-
-" Rg
-command! -bang -nargs=* Rg
-  \ call fzf#vim#grep(
-  \   'rg --column --line-number --no-heading --color=always --smart-case '.shellescape(<q-args>), 1,
-  \           fzf#vim#with_preview(), <bang>0)
-
-" Floating window
-set winblend=0
-
-hi NormalFloat guibg=None
-if exists('g:fzf_colors.bg')
-    call remove(g:fzf_colors, 'bg')
-endif
-
-if stridx($FZF_DEFAULT_OPTS, '--border') == -1
-    let $FZF_DEFAULT_OPTS .= ' --border'
-endif
-
-function! FloatingFZF()
-    let width = float2nr(&columns * 0.8)
-    let height = float2nr(&lines * 0.6)
-    let opts = { 'relative': 'editor',
-               \ 'row': (&lines - height) / 2,
-               \ 'col': (&columns - width) / 2,
-               \ 'width': width,
-               \ 'height': height }
-
-    call nvim_open_win(nvim_create_buf(v:false, v:true), v:true, opts)
-endfunction
-
-let g:fzf_layout = { 'window': 'call FloatingFZF()' }
-
-tnoremap <a-a> <esc>a
-tnoremap <a-b> <esc>b
-tnoremap <a-d> <esc>d
-tnoremap <a-f> <esc>f
-
-" Commands history
-nnoremap <leader>h :History: <CR>
-" Search history
-nnoremap <leader>s :History/ <CR>
-" Normal mode Maps
-nnoremap <leader>m :Maps <CR>
-" Lines with search
-nnoremap <leader>l :Lines <CR>
-" Help
-nnoremap <leader><leader>h :Helptags <CR>
-" Rg
-nnoremap <leader>r :Rg <CR>
-" Buffers
-nnoremap <leader>b :Buffers <CR>
-" Files
-nnoremap <leader>f :Files <CR>
+" command! -bang -nargs=? -complete=dir Files
+"   \ call fzf#vim#files(<q-args>, fzf#vim#with_preview(), <bang>0)
+" 
+" 
+" " Rg
+" command! -bang -nargs=* Rg
+"   \ call fzf#vim#grep(
+"   \   'rg --column --line-number --no-heading --color=always --smart-case '.shellescape(<q-args>), 1,
+"   \           fzf#vim#with_preview(), <bang>0)
+" 
+" " Floating window
+" set winblend=0
+" 
+" hi NormalFloat guibg=None
+" if exists('g:fzf_colors.bg')
+"     call remove(g:fzf_colors, 'bg')
+" endif
+" 
+" if stridx($FZF_DEFAULT_OPTS, '--border') == -1
+"     let $FZF_DEFAULT_OPTS .= ' --border'
+" endif
+" 
+" function! FloatingFZF()
+"     let width = float2nr(&columns * 0.8)
+"     let height = float2nr(&lines * 0.6)
+"     let opts = { 'relative': 'editor',
+"                \ 'row': (&lines - height) / 2,
+"                \ 'col': (&columns - width) / 2,
+"                \ 'width': width,
+"                \ 'height': height }
+" 
+"     call nvim_open_win(nvim_create_buf(v:false, v:true), v:true, opts)
+" endfunction
+" 
+" let g:fzf_layout = { 'window': 'call FloatingFZF()' }
+" 
+" tnoremap <a-a> <esc>a
+" tnoremap <a-b> <esc>b
+" tnoremap <a-d> <esc>d
+" tnoremap <a-f> <esc>f
+" 
+" " Commands history
+" nnoremap <leader>h :History: <CR>
+" " Search history
+" nnoremap <leader>s :History/ <CR>
+" " Normal mode Maps
+" nnoremap <leader>m :Maps <CR>
+" " Lines with search
+" nnoremap <leader>l :Lines <CR>
+" " Help
+" nnoremap <leader><leader>h :Helptags <CR>
+" " Rg
+" nnoremap <leader>r :Rg <CR>
+" " Buffers
+" nnoremap <leader>b :Buffers <CR>
+" " Files
+" nnoremap <leader>f :Files <CR>
 
 """"""""""""""""""
 " Easy motion
@@ -272,7 +305,8 @@ let g:vimwiki_list = [{
 	\ 'syntax': 'markdown',
 	\ 'ext': '.md',
 	\ 'path_html': '~/.vimwiki/site_html/',
-	\ 'custom_wiki2html': 'vimwiki_markdown',
+	\ 'custom_wiki2html': '~/venvs/sci/bin/vimwiki_markdown',
+    \ 'html_filename_parameterization': 1,
 	\ 'template_ext': '.tpl'}]
 
 let g:conceallevel=3
@@ -314,10 +348,12 @@ nnoremap <C-e> :WinResizerStartResize <CR>
 " Some notes:
 "   1. In case jdtls crashes
 "       - Delete all workspaces in .config/coc/extensions/coc-java-data
+"   2. .classpath needs to be made
+"       - mvn eclipse:eclipse
 """"""""""""""""""
 set hidden
-set nobackup
-set nowritebackup
+" set nobackup
+" set nowritebackup
 set updatetime=300
 set shortmess+=c
 set signcolumn=yes
@@ -448,7 +484,7 @@ let g:coc_snippet_next = '<c-j>'
 let g:coc_snippet_prev = '<c-k>'
 
 " Use <C-j> for both expand and jump (make expand higher priority.)
-imap <C-j> <Plug>(coc-snippets-expand-jump)
+" imap <C-j> <Plug>(coc-snippets-expand-jump)
 
 
 inoremap <silent><expr> <TAB>
@@ -463,6 +499,24 @@ function! s:check_back_space() abort
 endfunction
 
 
+""""""""""""""""""
+" CtrlSF
+""""""""""""""""""
+nmap     <leader>/ <Plug>CtrlSFPrompt
+vmap     <leader>/ <Plug>CtrlSFVwordPath
+
+
+""""""""""""""""""
+" Tree Sitter
+""""""""""""""""""
+" lua <<EOF
+" require'nvim-treesitter.configs'.setup {
+"   -- Modules and its options go here
+"   highlight = { enable = true },
+"   incremental_selection = { enable = true },
+"   textobjects = { enable = true },
+" }
+" EOF
 
 """"""""""""""""""
 " Language specific properties
@@ -470,3 +524,24 @@ endfunction
 autocmd FileType typescript setlocal shiftwidth=2 softtabstop=2 expandtab
 autocmd FileType java setlocal shiftwidth=2 softtabstop=2 expandtab
 autocmd FileType html setlocal shiftwidth=2 softtabstop=2 expandtab
+
+
+
+""""""""""""""""""
+" Table mode
+""""""""""""""""""
+
+" Table mode toggler <leader>tm
+function! s:isAtStartOfLine(mapping)
+    let text_before_cursor = getline('.')[0 : col('.')-1]
+    let mapping_pattern = '\V' . escape(a:mapping, '\')
+    let comment_pattern = '\V' . escape(substitute(&l:commentstring, '%s.*$', '', ''), '\')
+    return (text_before_cursor =~? '^' . ('\v(' . comment_pattern . '\v)?') . '\s*\v' . mapping_pattern . '\v$')
+endfunction
+
+inoreabbrev <expr> <bar><bar>
+            \ <SID>isAtStartOfLine('\|\|') ?
+            \ '<c-o>:TableModeEnable<cr><bar><space><bar><left><left>' : '<bar><bar>'
+inoreabbrev <expr> __
+            \ <SID>isAtStartOfLine('__') ?
+            \ '<c-o>:silent! TableModeDisable<cr>' : '__'
