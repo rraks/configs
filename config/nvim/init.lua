@@ -6,12 +6,13 @@
 -- Imports
 --
 
-require('keybindings')
 require('general')
+require('keybindings')
 require('plugins')
-require('lsp')
 require('treesitter')
+require('lsp')
 require('completion')
 require('ui')
 require('misc')
 require('tscope')
+require('gsigns')
