@@ -1,0 +1,124 @@
+--- st.c
++++ st.c
+@@ -587,119 +666,47 @@ selected(int x, int y)
+ 		return BETWEEN(y, sel.nb.y, sel.ne.y)
+ 		    && BETWEEN(x, sel.nb.x, sel.ne.x);
+ 
+-	return BETWEEN(y, sel.nb.y, sel.ne.y)
+-	    && (y != sel.nb.y || x >= sel.nb.x)
+-	    && (y != sel.ne.y || x <= sel.ne.x);
+-}
+-
+-void
+-selsnap(int *x, int *y, int direction)
+-{
+-	int newx, newy, xt, yt;
+-	int delim, prevdelim;
+-	Glyph *gp, *prevgp;
+-
+-	switch (sel.snap) {
+-	case SNAP_WORD:
+-		/*
+-		 * Snap around if the word wraps around at the end or
+-		 * beginning of a line.
+-		 */
+-		prevgp = &term.line[*y][*x];
+-		prevdelim = ISDELIM(prevgp->u);
+-		for (;;) {
+-			newx = *x + direction;
+-			newy = *y;
+-			if (!BETWEEN(newx, 0, term.col - 1)) {
+-				newy += direction;
+-				newx = (newx + term.col) % term.col;
+-				if (!BETWEEN(newy, 0, term.row - 1))
+-					break;
+-
+-				if (direction > 0)
+-					yt = *y, xt = *x;
+-				else
+-					yt = newy, xt = newx;
+-				if (!(term.line[yt][xt].mode & ATTR_WRAP))
+-					break;
+-			}
+-
+-			if (newx >= tlinelen(newy))
+-				break;
+-
+-			gp = &term.line[newy][newx];
+-			delim = ISDELIM(gp->u);
+-			if (!(gp->mode & ATTR_WDUMMY) && (delim != prevdelim
+-					|| (delim && gp->u != prevgp->u)))
+-				break;
+-
+-			*x = newx;
+-			*y = newy;
+-			prevgp = gp;
+-			prevdelim = delim;
+-		}
+-		break;
+-	case SNAP_LINE:
+-		/*
+-		 * Snap around if the the previous line or the current one
+-		 * has set ATTR_WRAP at its end. Then the whole next or
+-		 * previous line will be selected.
+-		 */
+-		*x = (direction < 0) ? 0 : term.col - 1;
+-		if (direction < 0) {
+-			for (; *y > 0; *y += direction) {
+-				if (!(term.line[*y-1][term.col-1].mode
+-						& ATTR_WRAP)) {
+-					break;
+-				}
+-			}
+-		} else if (direction > 0) {
+-			for (; *y < term.row-1; *y += direction) {
+-				if (!(term.line[*y][term.col-1].mode
+-						& ATTR_WRAP)) {
+-					break;
+-				}
+-			}
+-		}
+-		break;
+-	}
++	return ((sel.nb.y > sel.ne.y) ? OUT(y, sel.nb.y, sel.ne.y)
++	                              : BETWEEN(y, sel.nb.y, sel.ne.y)) &&
++	       (y != sel.nb.y || x >= sel.nb.x) &&
++	       (y != sel.ne.y || x <= sel.ne.x);
+ }
+ 
+ char *
+ getsel(void)
+ {
+ 	char *str, *ptr;
+-	int y, bufsize, lastx, linelen;
++	int y, yy, bufsize, lastx;
+ 	Glyph *gp, *last;
+ 
+ 	if (sel.ob.x == -1)
+ 		return NULL;
+ 
+-	bufsize = (term.col+1) * (sel.ne.y-sel.nb.y+1) * UTF_SIZ;
++	int const start = sel.swap ? sel.oe.y : sel.ob.y, h = rows();
++	int endy = (sel.swap ? sel.ob.y : sel.oe.y);
++	for (; endy < start; endy += h);
++	Line * const cbuf = IS_SET(MODE_ALTSCREEN) ? term.line : buf;
++	bufsize = (term.col+1) * (endy-start+1 ) * UTF_SIZ;
++	assert(bufsize > 0);
+ 	ptr = str = xmalloc(bufsize);
+ 
+ 	/* append every set & selected glyph to the selection */
+-	for (y = sel.nb.y; y <= sel.ne.y; y++) {
+-		if ((linelen = tlinelen(y)) == 0) {
+-			*ptr++ = '\n';
+-			continue;
+-		}
++	for (y = start; y <= endy; y++) {
++		yy = y % h;
+ 
+ 		if (sel.type == SEL_RECTANGULAR) {
+-			gp = &term.line[y][sel.nb.x];
++			gp = &cbuf[yy][sel.nb.x];
+ 			lastx = sel.ne.x;
+ 		} else {
++			gp = &cbuf[yy][start == y ? sel.nb.x : 0];
++			lastx = (endy == y) ? sel.ne.x : term.col-1;
