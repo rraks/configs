@@ -2,7 +2,7 @@
 
 local project_name = vim.fn.fnamemodify(vim.fn.getcwd(), ':p:h:t')
 
-local workspace_dir = '/home/rraks/.config/jdtls/' .. project_name
+local workspace_dir = '/home/rraks/.config/jdtls/workspace' .. project_name
 
 local config = {
   cmd = {
@@ -16,8 +16,8 @@ local config = {
     '--add-modules=ALL-SYSTEM',
     '--add-opens', 'java.base/java.util=ALL-UNNAMED',
     '--add-opens', 'java.base/java.lang=ALL-UNNAMED',
-    '-jar', '/home/rraks/eclipse.jdt.ls/org.eclipse.jdt.ls.product/target/repository/plugins/org.eclipse.equinox.launcher_1.6.400.v20210924-0641.jar',
-    '-configuration', '/home/rraks/eclipse.jdt.ls/org.eclipse.jdt.ls.product/target/repository/config_linux',
+    '-jar', '/home/rraks/.config/jdtls/plugins/org.eclipse.equinox.launcher_1.6.400.v20210924-0641.jar',
+    '-configuration', '/home/rraks/.config/jdtls/config_linux',
     -- See `data directory configuration` section in the README
     '-data', workspace_dir,
   },

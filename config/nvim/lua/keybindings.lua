@@ -24,3 +24,9 @@ keymap('i', '<c-s>', '<Esc>:w<CR>a', {})
 
 -- Clear highlight
 nkeymap('<c-h>', ':nohlsearch<Bar>:echo<CR>')
+
+
+-- Don't jump on star *
+keymap('n', '*', '*``', {})
+
+

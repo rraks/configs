@@ -39,6 +39,20 @@ telescope.setup {
         ["<C-q>"] = actions.smart_send_to_qflist + actions.open_qflist
       }
     }
+  },
+  extensions = {
+    aerial = {
+      -- How to format the symbols
+      format_symbol = function(symbol_path, filetype)
+        if filetype == "json" or filetype == "yaml" then
+          return table.concat(symbol_path, ".")
+        else
+          return symbol_path[#symbol_path]
+        end
+      end,
+      -- Available modes: symbols, lines, both
+      show_columns = "both",
+    },
   }
 }
 

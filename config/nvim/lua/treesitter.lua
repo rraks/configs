@@ -1,6 +1,5 @@
 local configs = require 'nvim-treesitter.configs'
 configs.setup {
-  ensure_installed = "maintained", -- Only maintained parsers allowed
   highlight = { 
     enable = true,
   },
@@ -8,3 +7,15 @@ configs.setup {
     enable = false,
   }
 }
+
+
+require('treesitter-context').setup({
+  mode = 'topline',
+  line_numbers = true,
+  max_lines = 8,
+})
+
+
+vim.keymap.set("n", "]c", function()
+  require("treesitter-context").go_to_context(vim.v.count1)
+end, { silent = true })
